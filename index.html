@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>전기기사 실기 문제은행</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <button id="backBtn" class="back-btn" hidden>← 목록</button>
+    <h1 id="pageTitle">⚡ 전기기사 실기 문제은행</h1>
+    <button id="themeBtn" class="theme-btn" aria-label="다크모드 전환">🌙</button>
+  </div>
+</header>
+
+<main id="app" class="app-main">
+  <!-- 홈 화면 -->
+  <section id="homeView">
+    <p class="subtitle">2시간마다 출제되는 실기 문제 20문항씩 · 자가채점으로 복습하세요</p>
+    <div id="sessionList" class="session-list"></div>
+  </section>
+
+  <!-- 회차 상세 화면 -->
+  <section id="detailView" hidden>
+    <div class="score-card">
+      <div class="score-top">
+        <span id="scoreText" class="score-text">0 / 20</span>
+        <span id="scorePct" class="score-pct"></span>
+      </div>
+      <div class="progress-bar"><div id="scoreBar" class="progress-fill"></div></div>
+      <div class="filter-row" id="filterRow">
+        <button class="filter-chip active" data-type="전체">전체</button>
+        <button class="filter-chip" data-type="단답">단답</button>
+        <button class="filter-chip" data-type="서술">서술</button>
+        <button class="filter-chip" data-type="계산">계산</button>
+      </div>
+    </div>
+    <div id="questionList" class="question-list"></div>
+    <button id="resetBtn" class="reset-btn">이 회차 채점 초기화</button>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <p>전기기사 실기(필답형) 대비 문제은행 · 정답을 가리고 풀어보세요</p>
+</footer>
+
+<script src="quizzes-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
