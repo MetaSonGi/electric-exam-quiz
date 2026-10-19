@@ -18,7 +18,11 @@
 <main id="app" class="app-main">
   <!-- 홈 화면 -->
   <section id="homeView">
-    <p class="subtitle">2시간마다 출제되는 실기 문제 20문항씩 · 자가채점으로 복습하세요</p>
+    <p class="subtitle" id="homeSubtitle">2시간마다 출제되는 실기 문제 20문항씩 · 자가채점으로 복습하세요</p>
+    <div class="tab-row" id="tabRow">
+      <button class="tab-btn active" data-tab="mock">📝 모의회차</button>
+      <button class="tab-btn" data-tab="past">📚 기출문제</button>
+    </div>
     <div id="sessionList" class="session-list"></div>
   </section>
 
@@ -47,6 +51,7 @@
 </footer>
 
 <script src="quizzes-data.js"></script>
+<script src="past-exams-data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -18,9 +18,12 @@
   var scorePct = document.getElementById("scorePct");
   var scoreBar = document.getElementById("scoreBar");
   var resetBtn = document.getElementById("resetBtn");
+  var tabRow = document.getElementById("tabRow");
+  var homeSubtitle = document.getElementById("homeSubtitle");
 
   var currentSession = null;
   var currentFilter = "전체";
+  var currentTab = "mock"; // "mock" | "past" — 메모리만, 새로고침 시 모의회차로 복귀
 
   // ---------- 상태 ----------
   function loadProgress() {
@@ -76,6 +79,92 @@
     });
   }
 
+  // ---------- 탭 ----------
+  function sortedPastExams() {
+    var list = (typeof PAST_EXAMS !== "undefined" && PAST_EXAMS) ? PAST_EXAMS : [];
+    return list.slice().sort(function (a, b) {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.round - a.round;
+    });
+  }
+
+  function renderTabs() {
+    var btns = tabRow.querySelectorAll(".tab-btn");
+    btns.forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-tab") === currentTab);
+      btn.onclick = function () {
+        if (currentTab === btn.getAttribute("data-tab")) return;
+        currentTab = btn.getAttribute("data-tab");
+        renderHome();
+        window.scrollTo(0, 0);
+      };
+    });
+  }
+
+  function appendSessionCard(s) {
+    var st = sessionStats(s);
+    var card = document.createElement("div");
+    card.className = "session-card";
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+
+    var title = document.createElement("div");
+    title.className = "session-title";
+    title.textContent = s.title;
+    card.appendChild(title);
+
+    var meta = document.createElement("div");
+    meta.className = "session-meta";
+    var typeCounts = {};
+    s.questions.forEach(function (q) { typeCounts[q.type] = (typeCounts[q.type] || 0) + 1; });
+    var metaParts = [s.questions.length + "문제"];
+    ["단답", "서술", "계산"].forEach(function (t) {
+      if (typeCounts[t]) metaParts.push(t + " " + typeCounts[t]);
+    });
+    meta.textContent = metaParts.join(" · ");
+    card.appendChild(meta);
+
+    var bar = document.createElement("div");
+    bar.className = "progress-bar";
+    var fill = document.createElement("div");
+    fill.className = "progress-fill";
+    fill.style.width = Math.round(st.graded / st.total * 100) + "%";
+    bar.appendChild(fill);
+    card.appendChild(bar);
+
+    var note = document.createElement("div");
+    note.className = "session-progress";
+    note.textContent = st.graded === 0
+      ? "아직 풀지 않음"
+      : "채점 " + st.graded + "/" + st.total + " · 맞음 " + st.correct + "문제";
+    card.appendChild(note);
+
+    card.addEventListener("click", function () { openSession(s.id); });
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSession(s.id); }
+    });
+    sessionList.appendChild(card);
+  }
+
+  function renderEmptyNote(text) {
+    var p = document.createElement("p");
+    p.className = "empty-note";
+    p.textContent = text;
+    sessionList.appendChild(p);
+  }
+
+  function renderMockList() {
+    var sessions = sortedSessions();
+    if (!sessions.length) { renderEmptyNote("아직 등록된 회차가 없습니다."); return; }
+    sessions.forEach(appendSessionCard);
+  }
+
+  function renderPastList() {
+    var exams = sortedPastExams();
+    if (!exams.length) { renderEmptyNote("아직 등록된 기출문제가 없습니다."); return; }
+    exams.forEach(appendSessionCard);
+  }
+
   function renderHome() {
     pageTitle.textContent = "⚡ 전기기사 실기 문제은행";
     backBtn.hidden = true;
@@ -83,60 +172,22 @@
     detailView.hidden = true;
     currentSession = null;
     sessionList.innerHTML = "";
-    var sessions = sortedSessions();
-    if (!sessions.length) {
-      var p = document.createElement("p");
-      p.className = "empty-note";
-      p.textContent = "아직 등록된 회차가 없습니다.";
-      sessionList.appendChild(p);
-      return;
+    renderTabs();
+    if (currentTab === "past") {
+      homeSubtitle.textContent = "2018~2026년 기출 단답 모음 · 회차별로 풀어보세요";
+      renderPastList();
+    } else {
+      homeSubtitle.textContent = "2시간마다 출제되는 실기 문제 20문항씩 · 자가채점으로 복습하세요";
+      renderMockList();
     }
-    sessions.forEach(function (s) {
-      var st = sessionStats(s);
-      var card = document.createElement("div");
-      card.className = "session-card";
-      card.setAttribute("role", "button");
-      card.setAttribute("tabindex", "0");
-
-      var title = document.createElement("div");
-      title.className = "session-title";
-      title.textContent = s.title;
-      card.appendChild(title);
-
-      var meta = document.createElement("div");
-      meta.className = "session-meta";
-      var typeCounts = {};
-      s.questions.forEach(function (q) { typeCounts[q.type] = (typeCounts[q.type] || 0) + 1; });
-      meta.textContent = s.questions.length + "문제 · 단답 " + (typeCounts["단답"] || 0) +
-        " · 서술 " + (typeCounts["서술"] || 0) + " · 계산 " + (typeCounts["계산"] || 0);
-      card.appendChild(meta);
-
-      var bar = document.createElement("div");
-      bar.className = "progress-bar";
-      var fill = document.createElement("div");
-      fill.className = "progress-fill";
-      fill.style.width = Math.round(st.graded / st.total * 100) + "%";
-      bar.appendChild(fill);
-      card.appendChild(bar);
-
-      var note = document.createElement("div");
-      note.className = "session-progress";
-      note.textContent = st.graded === 0
-        ? "아직 풀지 않음"
-        : "채점 " + st.graded + "/" + st.total + " · 맞음 " + st.correct + "문제";
-      card.appendChild(note);
-
-      card.addEventListener("click", function () { openSession(s.id); });
-      card.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSession(s.id); }
-      });
-      sessionList.appendChild(card);
-    });
   }
 
   // ---------- 회차 상세 ----------
   function openSession(id) {
     var s = QUIZ_SESSIONS.filter(function (x) { return x.id === id; })[0];
+    if (!s && typeof PAST_EXAMS !== "undefined" && PAST_EXAMS) {
+      s = PAST_EXAMS.filter(function (x) { return x.id === id; })[0];
+    }
     if (!s) return;
     currentSession = s;
     currentFilter = "전체";

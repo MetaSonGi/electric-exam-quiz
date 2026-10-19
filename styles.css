@@ -73,6 +73,24 @@ body {
   padding: 16px 16px 40px;
 }
 .subtitle { color: var(--muted); font-size: .9rem; margin: 4px 0 14px; }
+.tab-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.tab-btn {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+.tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1f2937;
+}
 .session-list { display: grid; gap: 12px; }
 .session-card {
   background: var(--card);
