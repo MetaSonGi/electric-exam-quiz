@@ -166,6 +166,7 @@ body {
 [data-theme="dark"] .q-type.서술 { background: #78350f; color: #fde68a; }
 [data-theme="dark"] .q-type.계산 { background: #14532d; color: #bbf7d0; }
 .q-text { margin: 0 0 10px; font-size: .98rem; white-space: pre-wrap; word-break: keep-all; }
+.q-img { display: block; max-width: 100%; height: auto; margin: 0 0 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
 .q-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .btn {
   border: 1px solid var(--border);

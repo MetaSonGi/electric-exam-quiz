@@ -257,6 +257,15 @@
       text.textContent = q.q;
       card.appendChild(text);
 
+      if (q.img) {
+        var qimg = document.createElement("img");
+        qimg.className = "q-img";
+        qimg.src = q.img;
+        qimg.alt = "문제 도면";
+        qimg.loading = "lazy";
+        card.appendChild(qimg);
+      }
+
       var actions = document.createElement("div");
       actions.className = "q-actions";
 
