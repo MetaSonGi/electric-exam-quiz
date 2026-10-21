@@ -5,32 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>전기기사 실기 문제은행</title>
 <link rel="stylesheet" href="styles.css">
-
-<style>
-/* 비밀번호 잠금 */
-body.locked .app-header,body.locked #app,body.locked .app-footer{display:none!important}
-#lockOverlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(1000px 500px at 50% -10%,#1b2a4a 0%,#0d1117 65%);font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
-body.unlocked #lockOverlay{display:none}
-.lockBox{text-align:center;padding:32px;max-width:340px;width:90%}
-.lockBox h2{font-size:22px;margin-bottom:8px;color:#e6edf3}
-.lockBox p{font-size:13px;color:#8b949e;margin-bottom:18px;line-height:1.6}
-.lockBox input{width:100%;padding:12px 14px;font-size:16px;border-radius:10px;border:1px solid #30363d;background:#161b22;color:#e6edf3;outline:none;margin-bottom:10px;box-sizing:border-box}
-.lockBox input:focus{border-color:#58a6ff}
-.lockBox button{width:100%;padding:12px;border:none;border-radius:10px;background:#58a6ff;color:#04101f;font-size:15px;font-weight:700;cursor:pointer}
-.lockErr{color:#ffa198;font-size:13px;min-height:20px;margin-top:10px}
-</style>
 </head>
-<body class="locked">
-<div id="lockOverlay">
-  <div class="lockBox">
-    <h2>🔒 전기기사 실기 문제은행</h2>
-    <p>비공개 페이지입니다.<br>비밀번호를 입력하세요.</p>
-    <input type="password" id="lockPw" placeholder="비밀번호" autocomplete="off" />
-    <button id="lockBtn">입장하기</button>
-    <div class="lockErr" id="lockErr"></div>
-  </div>
-</div>
-
+<body>
 <header class="app-header">
   <div class="header-inner">
     <button id="backBtn" class="back-btn" hidden>← 목록</button>
@@ -77,26 +53,5 @@ body.unlocked #lockOverlay{display:none}
 <script src="quizzes-data.js"></script>
 <script src="past-exams-data.js"></script>
 <script src="app.js"></script>
-
-<script>
-(function(){
-  var PASS_HASH = "aaef433051f916e363b88ceb9b10435863f9efa4812980337559e07871309772";
-  function unlock(){ document.body.classList.remove("locked"); document.body.classList.add("unlocked"); }
-  if (sessionStorage.getItem("eq_unlocked") === "1") { unlock(); return; }
-  function hex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0"+b.toString(16)).slice(-2); }).join(""); }
-  async function check(){
-    var pwEl = document.getElementById("lockPw");
-    var errEl = document.getElementById("lockErr");
-    try {
-      var hh = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pwEl.value)));
-      if (hh === PASS_HASH) { sessionStorage.setItem("eq_unlocked","1"); unlock(); }
-      else { errEl.textContent = "비밀번호가 틀렸습니다."; pwEl.value=""; pwEl.focus(); }
-    } catch(e){ errEl.textContent = "이 브라우저에서는 입장할 수 없습니다."; }
-  }
-  document.getElementById("lockBtn").addEventListener("click", check);
-  document.getElementById("lockPw").addEventListener("keydown", function(e){ if(e.key==="Enter") check(); });
-  document.getElementById("lockPw").focus();
-})();
-</script>
 </body>
 </html>
